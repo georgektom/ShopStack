@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useCart } from "../app/CartContext";
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { cart } = useCart();
+
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100">
       <header className="sticky top-0 z-20 border-b border-white/10 bg-stone-950/90 backdrop-blur">
@@ -13,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div>
               <div className="text-lg font-semibold tracking-tight">ShopStack</div>
               <div className="text-xs uppercase tracking-[0.24em] text-stone-400">
-                Product catalog
+                Electronic Store
               </div>
             </div>
           </Link>
@@ -21,6 +24,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <nav className="flex items-center gap-6 text-sm text-stone-300">
             <NavLink to="/" className="hover:text-white">
               Products
+            </NavLink>
+            <NavLink to="/cart" className="hover:text-white">
+              Cart ({cart?.itemCount ?? 0})
             </NavLink>
           </nav>
         </div>

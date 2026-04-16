@@ -151,6 +151,8 @@ const catalog = [
 ];
 
 async function main() {
+  await prisma.cartItem.deleteMany();
+  await prisma.cart.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
 

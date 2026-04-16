@@ -51,12 +51,12 @@ export function ProductListPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
       <section className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8 lg:p-10">
-        <p className="text-sm uppercase tracking-[0.32em] text-cyan-200/80">Electronic store</p>
+        <p className="text-sm uppercase tracking-[0.32em] text-cyan-200/80">ShopStack store</p>
         <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          Welcome to electronic store
+          Welcome to ShopStack store
         </h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-stone-300">
-          Browse a catalog of modern electronics and view product details powered by the backend API.
+        <p className="mt-5 max-w-4xl text-base leading-7 text-stone-300">
+          Browse a catalog of modern electronics and view product details powered by React and NodeJS.
         </p>
       </section>
 

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { cartRouter } from "./routes/cart-routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { productRouter } from "./routes/product-routes.js";
@@ -11,7 +12,8 @@ const clientOrigin = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
 
 app.use(
   cors({
-    origin: clientOrigin
+    origin: clientOrigin,
+    exposedHeaders: ["X-Cart-Id"]
   })
 );
 app.use(express.json());
@@ -21,6 +23,7 @@ app.get("/api/health", (_request, response) => {
 });
 
 app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
