@@ -83,3 +83,27 @@ export type Cart = {
   total: number;
   items: CartLineItem[];
 };
+
+export type Order = {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  addressLine1: string;
+  addressLine2: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  status: string;
+  subtotal: number;
+  total: number;
+  createdAt: string;
+  items: Array<{
+    id: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    productName: string;
+    productImage: string;
+    productId: string;
+  }>;
+};

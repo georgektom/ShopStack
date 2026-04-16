@@ -93,11 +93,11 @@ export function CartPage() {
 
             {error ? <p className="mt-5 text-sm text-rose-300">{error}</p> : null}
 
-            <div className="mt-8">
-              <Button className="w-full" disabled type="button">
-                Checkout
+            <Link className="mt-8 block" to="/checkout">
+              <Button className="w-full" type="button">
+                Proceed to checkout
               </Button>
-            </div>
+            </Link>
           </aside>
         </div>
       )}

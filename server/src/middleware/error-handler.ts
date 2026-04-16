@@ -28,7 +28,7 @@ export function errorHandler(
     });
   }
 
-  console.error("Unhandled server error:", error);
+  console.error(error);
 
   return response.status(500).json({
     error: {

@@ -4,6 +4,7 @@ import express from "express";
 import { cartRouter } from "./routes/cart-routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
+import { orderRouter } from "./routes/order-routes.js";
 import { productRouter } from "./routes/product-routes.js";
 
 const app = express();
@@ -24,6 +25,7 @@ app.get("/api/health", (_request, response) => {
 
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/orders", orderRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
