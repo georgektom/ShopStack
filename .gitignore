@@ -2,3 +2,17 @@ node_modules/
 
 .DS_Store
 
+dist/
+build/
+.vite/
+
+.env
+.env.local
+.env.*.local
+client/.env
+server/.env
+
+server/prisma/dev.db
+server/prisma/dev.db-journal
+server/prisma/*.db
+server/prisma/*.db-journal
