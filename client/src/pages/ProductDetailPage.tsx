@@ -100,7 +100,7 @@ export function ProductDetailPage() {
 
           <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white">{product.name}</h1>
           <p className="mt-4 text-base leading-7 text-stone-300">{product.description}</p>
-          <div className="mt-8 text-3xl font-semibold text-white">{formatCurrency(product.price)}</div>
+          <div className="mt-8 text-3xl font-semibold text-white"> { product.inventoryCount === 0 ? "Out of stock" : formatCurrency(product.price) }</div>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <QuantitySelector

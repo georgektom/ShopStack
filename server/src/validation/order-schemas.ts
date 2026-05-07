@@ -10,11 +10,7 @@ export const createOrderSchema = z.object({
     state: z.string().trim().min(2),
     postalCode: z.string().trim().min(5)
   }),
-  headers: z
-    .object({
-      "x-cart-id": z.string().min(1)
-    })
-    .passthrough(),
+  headers: z.object({}).passthrough().optional(),
   params: z.object({}).optional(),
   query: z.object({}).optional()
 });

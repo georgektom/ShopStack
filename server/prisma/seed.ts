@@ -26,7 +26,7 @@ const catalog = [
         price: 129,
         image:
           "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80",
-        inventoryCount: 22
+        inventoryCount: 0
       },
       {
         name: "Pulse Studio Earbuds",

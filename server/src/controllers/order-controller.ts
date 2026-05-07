@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { createOrderFromCart } from "../services/order-service.js";
+import { getCartIdFromCookie } from "../utils/cart-cookie.js";
 
 export async function createOrder(request: Request, response: Response) {
   const order = await createOrderFromCart({
@@ -10,7 +11,7 @@ export async function createOrder(request: Request, response: Response) {
     city: request.body.city,
     state: request.body.state,
     postalCode: request.body.postalCode,
-    cartId: request.header("X-Cart-Id") ?? undefined
+    cartId: getCartIdFromCookie(request)
   });
 
   return response.status(201).json({ data: order });

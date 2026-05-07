@@ -32,6 +32,10 @@ export function OrderConfirmationPage() {
             <p className="mt-2 text-sm capitalize text-white">{order.status}</p>
           </div>
           <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Item Count</p>
+            <p className="mt-2 text-sm capitalize text-white">{order.itemCount}</p>
+          </div>
+          <div>
             <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Total</p>
             <p className="mt-2 text-sm text-white">{formatCurrency(order.total)}</p>
           </div>

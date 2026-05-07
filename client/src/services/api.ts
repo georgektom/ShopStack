@@ -1,5 +1,3 @@
-import { getCartId, setCartId } from "../lib/cart-session";
-
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
 
 export class ApiError extends Error {
@@ -13,31 +11,19 @@ export class ApiError extends Error {
   }
 }
 
-type ApiOptions = RequestInit & {
-  skipCartHeader?: boolean;
-};
+type ApiOptions = RequestInit;
 
 export async function apiRequest<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const headers = new Headers(options.headers ?? {});
-  headers.set("Content-Type", "application/json");
-
-  if (!options.skipCartHeader) {
-    const cartId = getCartId();
-
-    if (cartId) {
-      headers.set("X-Cart-Id", cartId);
-    }
+  if (!headers.has("Content-Type") && options.body) {
+    headers.set("Content-Type", "application/json");
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: "include",
     headers
   });
-  const nextCartId = response.headers.get("X-Cart-Id");
-
-  if (nextCartId) {
-    setCartId(nextCartId);
-  }
 
   const payload = await response.json();
 
@@ -96,6 +82,7 @@ export type Order = {
   status: string;
   subtotal: number;
   total: number;
+  itemCount: number;
   createdAt: string;
   items: Array<{
     id: string;

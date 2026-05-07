@@ -1,15 +1,11 @@
 import { z } from "zod";
 
-const cartHeaders = z.object({
-  "x-cart-id": z.string().optional()
-});
-
 export const addCartItemSchema = z.object({
   body: z.object({
     productId: z.string().min(1),
     quantity: z.coerce.number().int().min(1).max(10)
   }),
-  headers: cartHeaders.passthrough(),
+  headers: z.object({}).passthrough().optional(),
   params: z.object({}).optional(),
   query: z.object({}).optional()
 });
@@ -21,7 +17,7 @@ export const updateCartItemSchema = z.object({
   params: z.object({
     productId: z.string().min(1)
   }),
-  headers: cartHeaders.passthrough(),
+  headers: z.object({}).passthrough().optional(),
   query: z.object({}).optional()
 });
 
@@ -29,7 +25,7 @@ export const removeCartItemSchema = z.object({
   params: z.object({
     productId: z.string().min(1)
   }),
-  headers: cartHeaders.passthrough(),
+  headers: z.object({}).passthrough().optional(),
   body: z.object({}).optional(),
   query: z.object({}).optional()
 });

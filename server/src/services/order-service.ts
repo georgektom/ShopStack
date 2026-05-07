@@ -102,6 +102,7 @@ export async function createOrderFromCart(input: CheckoutInput) {
     subtotal: order.subtotal,
     total: order.total,
     createdAt: order.createdAt,
-    items: order.items
+    items: order.items,
+    itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0)
   };
 }

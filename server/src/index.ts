@@ -14,7 +14,7 @@ const clientOrigin = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
 app.use(
   cors({
     origin: clientOrigin,
-    exposedHeaders: ["X-Cart-Id"]
+    credentials: true
   })
 );
 app.use(express.json());
