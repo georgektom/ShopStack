@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../app/AuthContext";
 import { useCart } from "../app/CartContext";
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { user, logout } = useAuth();
   const { cart } = useCart();
 
   return (
@@ -28,6 +30,23 @@ export function AppShell({ children }: { children: ReactNode }) {
             <NavLink to="/cart" className="hover:text-white">
               Cart ({cart?.itemCount ?? 0})
             </NavLink>
+            {user ? (
+              <>
+                <span className="text-stone-400">{user.name}</span>
+                <button className="hover:text-white" onClick={() => void logout()} type="button">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className="hover:text-white">
+                  Login
+                </NavLink>
+                <NavLink to="/register" className="hover:text-white">
+                  Register
+                </NavLink>
+              </>
+            )}
           </nav>
         </div>
       </header>

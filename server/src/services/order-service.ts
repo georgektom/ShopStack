@@ -4,6 +4,7 @@ import { runInTransaction } from "../repositories/order-repository.js";
 import { SHIPPING_METHODS, type ShippingMethodId } from "../utils/shipping-methods.js";
 
 type CheckoutInput = {
+  userId?: string | null;
   customerName: string;
   customerEmail: string;
   addressLine1: string;
@@ -83,6 +84,7 @@ export async function createOrderFromCart(input: CheckoutInput) {
 
     return transaction.order.create({
       data: {
+        userId: input.userId ?? null,
         customerName: input.customerName,
         customerEmail: input.customerEmail,
         addressLine1: input.addressLine1,

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { authRouter } from "./routes/auth-routes.js";
 import { cartRouter } from "./routes/cart-routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
@@ -23,6 +24,7 @@ app.get("/api/health", (_request, response) => {
   response.json({ data: { ok: true } });
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);

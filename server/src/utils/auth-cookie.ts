@@ -1,6 +1,6 @@
-import type { Response, Request } from "express";
+import type { Request, Response } from "express";
 
-const CART_COOKIE_NAME = "shopstack_cart_id";
+const AUTH_COOKIE_NAME = "shopstack_auth_token";
 
 function parseCookieHeader(cookieHeader?: string) {
   if (!cookieHeader) {
@@ -19,13 +19,13 @@ function parseCookieHeader(cookieHeader?: string) {
   }, {});
 }
 
-export function getCartIdFromCookie(request: Request) {
+export function getAuthTokenFromCookie(request: Request) {
   const cookies = parseCookieHeader(request.headers.cookie);
-  return cookies[CART_COOKIE_NAME];
+  return cookies[AUTH_COOKIE_NAME];
 }
 
-export function setCartCookie(response: Response, cartId: string) {
-  response.cookie(CART_COOKIE_NAME, cartId, {
+export function setAuthCookie(response: Response, token: string) {
+  response.cookie(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: false,
@@ -33,8 +33,8 @@ export function setCartCookie(response: Response, cartId: string) {
   });
 }
 
-export function clearCartCookie(response: Response) {
-  response.clearCookie(CART_COOKIE_NAME, {
+export function clearAuthCookie(response: Response) {
+  response.clearCookie(AUTH_COOKIE_NAME, {
     httpOnly: true,
     sameSite: "lax",
     secure: false,

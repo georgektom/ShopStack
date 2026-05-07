@@ -25,6 +25,10 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
     headers
   });
 
+  if (response.status === 204) {
+    return null as T;
+  }
+
   const payload = await response.json();
 
   if (!response.ok) {

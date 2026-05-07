@@ -151,10 +151,12 @@ const catalog = [
 ];
 
 async function main() {
+  await prisma.session.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.cart.deleteMany();
+  await prisma.user.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
 
