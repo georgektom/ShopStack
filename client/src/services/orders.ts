@@ -8,6 +8,11 @@ export function createOrder(input: {
   city: string;
   state: string;
   postalCode: string;
+  shippingMethod: "standard" | "express" | "overnight";
+  paymentCardholderName: string;
+  paymentCardNumber: string;
+  paymentExpiryMonth: number;
+  paymentExpiryYear: number;
 }) {
   return apiRequest<Order>("/orders", {
     method: "POST",

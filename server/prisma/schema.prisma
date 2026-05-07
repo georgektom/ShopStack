@@ -59,6 +59,13 @@ model Order {
   city          String
   state         String
   postalCode    String
+  shippingMethod String
+  shippingCost   Float
+  paymentCardholderName String
+  paymentCardBrand String
+  paymentCardLast4 String
+  paymentExpiryMonth Int
+  paymentExpiryYear Int
   subtotal      Float
   total         Float
   status        OrderStatus @default(pending)

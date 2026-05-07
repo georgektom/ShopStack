@@ -1,6 +1,7 @@
 import { AppError } from "../utils/app-error.js";
 import { findCartById } from "../repositories/cart-repository.js";
 import { runInTransaction } from "../repositories/order-repository.js";
+import { SHIPPING_METHODS, type ShippingMethodId } from "../utils/shipping-methods.js";
 
 type CheckoutInput = {
   customerName: string;
@@ -10,6 +11,11 @@ type CheckoutInput = {
   city: string;
   state: string;
   postalCode: string;
+  shippingMethod: ShippingMethodId;
+  paymentCardholderName: string;
+  paymentCardNumber: string;
+  paymentExpiryMonth: number;
+  paymentExpiryYear: number;
   cartId?: string;
 };
 
@@ -25,6 +31,20 @@ export async function createOrderFromCart(input: CheckoutInput) {
   }
 
   const subtotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+  const shippingOption = SHIPPING_METHODS[input.shippingMethod];
+
+  if (!shippingOption) {
+    throw new AppError(400, "INVALID_SHIPPING_METHOD", "Selected shipping method is invalid.");
+  }
+
+  const paymentCardNumber = input.paymentCardNumber.replace(/\s+/g, "");
+  const paymentCardLast4 = paymentCardNumber.slice(-4);
+  const paymentCardBrand = paymentCardNumber.startsWith("4")
+    ? "Visa"
+    : paymentCardNumber.startsWith("5")
+      ? "Mastercard"
+      : "Card";
+  const total = subtotal + shippingOption.cost;
 
   const order = await runInTransaction(async (transaction) => {
     for (const item of cart.items) {
@@ -70,8 +90,15 @@ export async function createOrderFromCart(input: CheckoutInput) {
         city: input.city,
         state: input.state,
         postalCode: input.postalCode,
+        shippingMethod: shippingOption.label,
+        shippingCost: shippingOption.cost,
+        paymentCardholderName: input.paymentCardholderName,
+        paymentCardBrand,
+        paymentCardLast4,
+        paymentExpiryMonth: input.paymentExpiryMonth,
+        paymentExpiryYear: input.paymentExpiryYear,
         subtotal,
-        total: subtotal,
+        total,
         items: {
           create: cart.items.map((item) => ({
             quantity: item.quantity,
@@ -98,6 +125,13 @@ export async function createOrderFromCart(input: CheckoutInput) {
     city: order.city,
     state: order.state,
     postalCode: order.postalCode,
+    shippingMethod: order.shippingMethod,
+    shippingCost: order.shippingCost,
+    paymentCardholderName: order.paymentCardholderName,
+    paymentCardBrand: order.paymentCardBrand,
+    paymentCardLast4: order.paymentCardLast4,
+    paymentExpiryMonth: order.paymentExpiryMonth,
+    paymentExpiryYear: order.paymentExpiryYear,
     status: order.status,
     subtotal: order.subtotal,
     total: order.total,

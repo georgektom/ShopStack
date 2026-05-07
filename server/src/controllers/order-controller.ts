@@ -11,6 +11,11 @@ export async function createOrder(request: Request, response: Response) {
     city: request.body.city,
     state: request.body.state,
     postalCode: request.body.postalCode,
+    shippingMethod: request.body.shippingMethod,
+    paymentCardholderName: request.body.paymentCardholderName,
+    paymentCardNumber: request.body.paymentCardNumber,
+    paymentExpiryMonth: Number(request.body.paymentExpiryMonth),
+    paymentExpiryYear: Number(request.body.paymentExpiryYear),
     cartId: getCartIdFromCookie(request)
   });
 

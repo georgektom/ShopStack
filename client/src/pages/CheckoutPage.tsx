@@ -7,6 +7,27 @@ import { formatCurrency } from "../lib/format";
 import { ApiError } from "../services/api";
 import { createOrder } from "../services/orders";
 
+const SHIPPING_METHODS = [
+  {
+    id: "standard",
+    label: "Standard Shipping",
+    description: "Delivers in 5-7 business days.",
+    cost: 7
+  },
+  {
+    id: "express",
+    label: "Express Shipping",
+    description: "Delivers in 2-3 business days.",
+    cost: 18
+  },
+  {
+    id: "overnight",
+    label: "Overnight Shipping",
+    description: "Priority next business day delivery.",
+    cost: 29
+  }
+] as const;
+
 type FieldErrors = {
   customerName?: string;
   customerEmail?: string;
@@ -14,6 +35,11 @@ type FieldErrors = {
   city?: string;
   state?: string;
   postalCode?: string;
+  shippingMethod?: string;
+  paymentCardholderName?: string;
+  paymentCardNumber?: string;
+  paymentExpiryMonth?: string;
+  paymentExpiryYear?: string;
 };
 
 export function CheckoutPage() {
@@ -26,9 +52,23 @@ export function CheckoutPage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [shippingMethod, setShippingMethod] = useState<"" | "standard" | "express" | "overnight">("");
+  const [paymentCardholderName, setPaymentCardholderName] = useState("");
+  const [paymentCardNumber, setPaymentCardNumber] = useState("");
+  const [paymentExpiryMonth, setPaymentExpiryMonth] = useState("");
+  const [paymentExpiryYear, setPaymentExpiryYear] = useState("");
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const shippingFieldsComplete =
+    addressLine1.trim().length >= 5 &&
+    city.trim().length >= 2 &&
+    state.trim().length >= 2 &&
+    postalCode.trim().length >= 5;
+
+  const selectedShippingOption = SHIPPING_METHODS.find((method) => method.id === shippingMethod);
+  const checkoutTotal = cart.total + (selectedShippingOption?.cost ?? 0);
 
   function validateForm() {
     const nextErrors: FieldErrors = {};
@@ -57,6 +97,28 @@ export function CheckoutPage() {
       nextErrors.postalCode = "Enter a valid postal code.";
     }
 
+    if (!shippingMethod) {
+      nextErrors.shippingMethod = "Select a shipping method.";
+    }
+
+    if (shippingMethod) {
+      if (paymentCardholderName.trim().length < 2) {
+        nextErrors.paymentCardholderName = "Enter the cardholder name.";
+      }
+
+      if (!/^\d{13,19}$/.test(paymentCardNumber.replace(/\s+/g, ""))) {
+        nextErrors.paymentCardNumber = "Enter a valid dummy card number.";
+      }
+
+      if (!/^\d{1,2}$/.test(paymentExpiryMonth) || Number(paymentExpiryMonth) < 1 || Number(paymentExpiryMonth) > 12) {
+        nextErrors.paymentExpiryMonth = "Use a valid month.";
+      }
+
+      if (!/^\d{4}$/.test(paymentExpiryYear)) {
+        nextErrors.paymentExpiryYear = "Use a valid year.";
+      }
+    }
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -66,6 +128,10 @@ export function CheckoutPage() {
     setServerError(null);
 
     if (!validateForm()) {
+      return;
+    }
+
+    if (!shippingMethod) {
       return;
     }
 
@@ -79,7 +145,12 @@ export function CheckoutPage() {
         addressLine2: addressLine2.trim(),
         city: city.trim(),
         state: state.trim(),
-        postalCode: postalCode.trim()
+        postalCode: postalCode.trim(),
+        shippingMethod,
+        paymentCardholderName: paymentCardholderName.trim(),
+        paymentCardNumber: paymentCardNumber.replace(/\s+/g, ""),
+        paymentExpiryMonth: Number(paymentExpiryMonth),
+        paymentExpiryYear: Number(paymentExpiryYear)
       });
 
       setCart({
@@ -204,6 +275,106 @@ export function CheckoutPage() {
               {errors.postalCode ? <p className="mt-2 text-sm text-rose-300">{errors.postalCode}</p> : null}
             </label>
           </div>
+
+          {shippingFieldsComplete ? (
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-sm font-medium text-white">Shipping method</p>
+              <div className="mt-4 space-y-3">
+                {SHIPPING_METHODS.map((method) => (
+                  <label
+                    key={method.id}
+                    className="flex cursor-pointer items-start justify-between gap-4 rounded-3xl border border-white/10 bg-stone-950 px-5 py-4"
+                  >
+                    <div className="flex gap-3">
+                      <input
+                        checked={shippingMethod === method.id}
+                        className="mt-1"
+                        name="shippingMethod"
+                        onChange={() => setShippingMethod(method.id)}
+                        type="radio"
+                        value={method.id}
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-white">{method.label}</p>
+                        <p className="mt-1 text-sm text-stone-400">{method.description}</p>
+                      </div>
+                    </div>
+                    <div className="text-sm font-medium text-white">{formatCurrency(method.cost)}</div>
+                  </label>
+                ))}
+              </div>
+              {errors.shippingMethod ? (
+                <p className="mt-3 text-sm text-rose-300">{errors.shippingMethod}</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {shippingMethod ? (
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-sm font-medium text-white">Payment details</p>
+              <p className="mt-2 text-sm text-stone-400">
+                Dummy payment capture for the assessment. Only a masked card snapshot is stored on the order.
+              </p>
+
+              <div className="mt-4 space-y-5">
+                <label className="block">
+                  <span className="mb-2 block text-sm text-stone-300">Cardholder name</span>
+                  <input
+                    className="w-full rounded-3xl border border-white/10 bg-stone-950 px-5 py-3 text-white outline-none"
+                    onChange={(event) => setPaymentCardholderName(event.target.value)}
+                    value={paymentCardholderName}
+                  />
+                  {errors.paymentCardholderName ? (
+                    <p className="mt-2 text-sm text-rose-300">{errors.paymentCardholderName}</p>
+                  ) : null}
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm text-stone-300">Card number</span>
+                  <input
+                    className="w-full rounded-3xl border border-white/10 bg-stone-950 px-5 py-3 text-white outline-none"
+                    inputMode="numeric"
+                    onChange={(event) => setPaymentCardNumber(event.target.value)}
+                    placeholder="4111111111111111"
+                    value={paymentCardNumber}
+                  />
+                  {errors.paymentCardNumber ? (
+                    <p className="mt-2 text-sm text-rose-300">{errors.paymentCardNumber}</p>
+                  ) : null}
+                </label>
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-sm text-stone-300">Expiry month</span>
+                    <input
+                      className="w-full rounded-3xl border border-white/10 bg-stone-950 px-5 py-3 text-white outline-none"
+                      inputMode="numeric"
+                      onChange={(event) => setPaymentExpiryMonth(event.target.value)}
+                      placeholder="08"
+                      value={paymentExpiryMonth}
+                    />
+                    {errors.paymentExpiryMonth ? (
+                      <p className="mt-2 text-sm text-rose-300">{errors.paymentExpiryMonth}</p>
+                    ) : null}
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm text-stone-300">Expiry year</span>
+                    <input
+                      className="w-full rounded-3xl border border-white/10 bg-stone-950 px-5 py-3 text-white outline-none"
+                      inputMode="numeric"
+                      onChange={(event) => setPaymentExpiryYear(event.target.value)}
+                      placeholder="2028"
+                      value={paymentExpiryYear}
+                    />
+                    {errors.paymentExpiryYear ? (
+                      <p className="mt-2 text-sm text-rose-300">{errors.paymentExpiryYear}</p>
+                    ) : null}
+                  </label>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {serverError ? <p className="mt-5 text-sm text-rose-300">{serverError}</p> : null}
@@ -228,9 +399,17 @@ export function CheckoutPage() {
         </div>
 
         <div className="mt-6 border-t border-white/10 pt-4">
+          <div className="mb-3 flex items-center justify-between text-sm text-stone-300">
+            <span>Subtotal</span>
+            <span>{formatCurrency(cart.subtotal)}</span>
+          </div>
+          <div className="mb-3 flex items-center justify-between text-sm text-stone-300">
+            <span>Shipping</span>
+            <span>{formatCurrency(selectedShippingOption?.cost ?? 0)}</span>
+          </div>
           <div className="flex items-center justify-between font-semibold text-white">
             <span>Total</span>
-            <span>{formatCurrency(cart.total)}</span>
+            <span>{formatCurrency(checkoutTotal)}</span>
           </div>
         </div>
       </aside>

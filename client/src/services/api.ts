@@ -79,6 +79,13 @@ export type Order = {
   city: string;
   state: string;
   postalCode: string;
+  shippingMethod: string;
+  shippingCost: number;
+  paymentCardholderName: string;
+  paymentCardBrand: string;
+  paymentCardLast4: string;
+  paymentExpiryMonth: number;
+  paymentExpiryYear: number;
   status: string;
   subtotal: number;
   total: number;
