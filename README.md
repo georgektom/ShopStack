@@ -1,14 +1,15 @@
 # ShopStack
 
 ShopStack is an eCommerce app built with a React frontend, NodeJS backend, and Prisma with SQLite. 
-The current implementation focuses on a complete guest PDP -> cart -> checkout -> order confirmation flow.
+The current implementation focuses on a complete storefront flow from product discovery through cart, checkout, order placement, and authentication.
 
 ## Stack
 
 - Frontend: React, Vite, React Router, Tailwind CSS
 - Backend: Node.js, Express, Zod validation
 - Data: SQLite with Prisma ORM
-- Cart model: guest cart persisted in `localStorage` and managed between front end and backend through the `X-Cart-Id` header.
+- Cart model: cookie-backed cart session with server-managed cart persistence
+- Auth model: cookie-based session auth with login and registration
 
 ## Implemented features
 
@@ -27,14 +28,27 @@ The current implementation focuses on a complete guest PDP -> cart -> checkout -
 - `DELETE /api/cart/items/:productId`
 - Add-to-cart interaction from the product detail page
 - Cart page with quantity updates, remove item, subtotal, and total
-- Guest cart tracking using `X-Cart-Id`
+- Guest cart tracking using an HTTP cookie
 
 ### F3. Basic Checkout Flow
 
 - `POST /api/orders`
 - Checkout form with separate shipping fields
+- Conditional shipping method selection after shipping fields are completed
+- Dummy payment section shown after shipping method selection
+- Shipping method and masked payment snapshot stored on the order
 - Inventory validation and decrement during order placement
 - Order confirmation page
+
+### F5. User Authentication
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- Cookie-based auth session
+- Login and registration pages
+- Guest cart restoration/association after login
 
 ## Architecture overview
 
@@ -44,6 +58,7 @@ Prisma handles persistence, including transactional order placement and inventor
 
 The frontend is organized around route-level pages, reusable components, and a small API service layer. 
 The cart is server-backed so pricing, inventory, and checkout rules remain authoritative on the backend.
+Authentication state is managed with a lightweight React auth context rather than Redux, keeping the app simple and focused for the scope of this project.
 
 ## Setup
 
@@ -91,19 +106,20 @@ The project was implemented incrementally.
 1. F1 established the product catalog and product detail experience.
 2. F2 added a complete guest cart backed by the server.
 3. F3 completed the purchase path with checkout, order creation, and inventory updates.
+4. Authentication was added afterward with cookie-based session support while preserving the server-backed cart flow.
 
 This approach prioritizes one full user journey over breadth.
 
 ## Trade-offs and shortcuts
 
-- Authentication is deferred to keep the guest flow complete and focused.
 - Shipping data is captured and stored directly on the order model.
+- Payment is intentionally a dummy capture flow and only stores a masked card snapshot rather than raw sensitive card data.
 - Search, filtering, validation, and error handling are included where they materially improve the core flow.
 - Tests, admin tools, real-time inventory, and other advanced features are intentionally left for later increments.
 
 ## To build next
 
-- Authentication and order history
+- Auth-protected order history
 - Automated tests for backend services and API endpoints
 - Improved checkout UX and confirmation details
 - Promotions and discount logic
