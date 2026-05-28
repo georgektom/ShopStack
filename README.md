@@ -50,6 +50,12 @@ The current implementation focuses on a complete storefront flow from product di
 - Login and registration pages
 - Guest cart restoration/association after login
 
+### F12. Testing Strategy
+
+- Backend unit tests for password hashing and shipping method configuration
+- Frontend component tests for quantity selector behavior
+- Root test script to run client and server tests together
+
 ## Architecture overview
 
 The backend is organized into routes, controllers, services, repositories, middleware, and validation. 
@@ -120,7 +126,7 @@ This approach prioritizes one full user journey over breadth.
 ## To build next
 
 - Auth-protected order history
-- Automated tests for backend services and API endpoints
+- Automated tests for backend utilities and frontend components
 - Improved checkout UX and confirmation details
 - Promotions and discount logic
 - Rate limiting, caching, and performance tuning
